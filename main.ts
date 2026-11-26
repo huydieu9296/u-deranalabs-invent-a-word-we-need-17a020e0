@@ -1,31 +1,41 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+// Invent a Word We Need — make.fun entry program.
+// It holds the entry text, checks it against the bounty limits, and
+// writes it to $MAKEFUN_OUTPUT_DIR/entry.txt for the grader.
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
-// Invent a Word We Need — entry of at most 140 characters.
-const ENTRY =
-  "Doomscrollache: the headache from reading bad news you chose to keep reading.";
+const ENTRY = `Doomscrollache: the headache from reading bad news you chose to keep reading.`;
+const MIN_CHARS = 1;
+const MAX_CHARS = 140;
 
-const HERE = dirname(fileURLToPath(import.meta.url));
-
-// The entry text is also kept in entry.txt next to this script. If it is
-// present it must agree with the embedded entry; if it is absent (for
-// example a harness that copies only main.ts) the embedded text is used.
-let TEXT = ENTRY;
-const entryPath = join(HERE, "entry.txt");
-if (existsSync(entryPath)) {
-  const fromFile = readFileSync(entryPath, "utf8").trim();
-  if (fromFile.length > 0 && fromFile !== ENTRY) {
-    throw new Error("entry.txt does not match the entry embedded in main.ts");
-  }
+function reject(problem: string): never {
+  console.error(`entry rejected: ${problem}`);
+  process.exit(1);
 }
 
-if (TEXT.length < 1 || TEXT.length > 140) {
-  throw new Error(`entry must be 1-140 characters, got ${TEXT.length}`);
+function countWords(text: string): number {
+  return text.split(/\s+/).filter((word) => word.length > 0).length;
 }
-if (TEXT.includes("\n")) { throw new Error("entry must be a single line"); }
 
-const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
-mkdirSync(outDir, { recursive: true });
-writeFileSync(join(outDir, "entry.txt"), TEXT, "utf8");
-console.log(`wrote ${TEXT.length} characters to ${join(outDir, "entry.txt")}`);
+function countSentences(text: string): number {
+  return text.split(/(?<=[.!?])\s+/).filter((part) => part.length > 0).length;
+}
+
+const entry = ENTRY.trim();
+const words = countWords(entry);
+const sentences = countSentences(entry);
+if (entry.length < MIN_CHARS) reject(`only ${entry.length} characters, need at least ${MIN_CHARS}`);
+if (entry.length > MAX_CHARS) reject(`${entry.length} characters, over the ${MAX_CHARS} limit`);
+if (entry !== ENTRY) reject("entry has leading or trailing whitespace");
+if (words < 1) reject("entry has no words");
+if (sentences < 1) reject("entry has no sentence");
+if (/[\r\n]/.test(entry)) reject("entry must be a single line");
+if (/[\u0000-\u001f\u007f]/.test(entry)) reject("entry contains control characters");
+
+const destinationDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+mkdirSync(destinationDir, { recursive: true });
+const entryOutPath = join(destinationDir, "entry.txt");
+writeFileSync(entryOutPath, `${entry}\n`, "utf8");
+const writtenBack = readFileSync(entryOutPath, "utf8");
+if (writtenBack !== `${entry}\n`) reject("entry.txt does not match the entry after writing");
+console.log(`wrote ${entry.length} characters (${words} words, ${sentences} sentences) to ${entryOutPath}`);

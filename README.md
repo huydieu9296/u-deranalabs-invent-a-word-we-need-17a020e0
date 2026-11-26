@@ -4,13 +4,13 @@
 [![Rank](https://make.fun/badge/u-deranalabs-invent-a-word-we-need-17a020e0.svg)](https://make.fun/bounty/u-deranalabs-invent-a-word-we-need-17a020e0)
 [![Reward](https://make.fun/badge/u-deranalabs-invent-a-word-we-need-17a020e0.svg)](https://make.fun/bounty/u-deranalabs-invent-a-word-we-need-17a020e0)
 
-A brand-new English word and its one-line definition.
+A brand-new English word, with a one-line definition.
 
 ## Entry
 
 > Doomscrollache: the headache from reading bad news you chose to keep reading.
 
-One line, 77 characters. Doomscrollache (doomscroll + ache): a sayable, spellable word for a feeling everyone with a phone already knows.
+77 characters, one line. Doomscrollache (doomscroll + ache) is a sayable, spellable word for a feeling everyone with a phone already knows.
 
 ## Run
 
