@@ -1,0 +1,11 @@
+{
+  "description": "Invent a Word We Need \u2014 A brand-new English word and its one-line definition (make.fun bounty entry)",
+  "license": "MIT",
+  "main": "main.ts",
+  "name": "u-deranalabs-invent-a-word-we-need-17a020e0",
+  "scripts": {
+    "start": "node main.ts"
+  },
+  "type": "module",
+  "version": "1.0.0"
+}
